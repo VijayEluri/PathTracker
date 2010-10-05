@@ -29,7 +29,7 @@
             android:authorities="com.ilikeblues.provider.PathTracker"
         />
 
-		<uses-library android:name="com.google.android.maps" />
+<!--		<uses-library android:name="com.google.android.maps" />-->
 		
         <activity android:name="NotesList" android:label="@string/title_notes_list">
             <intent-filter>

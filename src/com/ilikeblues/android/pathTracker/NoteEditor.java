@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
@@ -95,6 +96,9 @@ public class NoteEditor extends Activity {
     private TextView locText;
     private TextView dateText;
 
+    private boolean isWaitingLocation = false;
+	private ProgressDialog pd;
+
     private Date            mDateContent;
     private LocationAddress mLocationContent = new LocationAddress(LocationManager.GPS_PROVIDER, this);
     
@@ -109,6 +113,11 @@ public class NoteEditor extends Activity {
         	Log.e("EN NOTIFIEREDITOR:", address);
         	
         	locText.setText(address);
+        	
+        	isWaitingLocation = false;
+        	if (pd.isShowing()) {
+        		pd.dismiss();
+        	}
         };
     };
     /**
@@ -147,6 +156,8 @@ public class NoteEditor extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+    	pd = new ProgressDialog(this);
+    	
         super.onCreate(savedInstanceState);
 
         /*********************************************/
@@ -226,6 +237,8 @@ public class NoteEditor extends Activity {
         	locText.setText("Unable to retrieve location!");
         } else {
         	locText.setText("Loading location!");
+        	
+        	isWaitingLocation = true;
         }
 	}
 
@@ -257,8 +270,9 @@ public class NoteEditor extends Activity {
             mDateContent = new Date(mCursor.getLong(COLUMN_INDEX_DATE));
             mLocationContent = new LocationAddress(LocationManager.GPS_PROVIDER, this);
 
-            mLocationContent.setLatitude(mCursor.getDouble(COLUMN_INDEX_LAT));
-            mLocationContent.setLongitude(mCursor.getDouble(COLUMN_INDEX_LON));
+            mLocationContent.setLatLon(
+            		mCursor.getDouble(COLUMN_INDEX_LAT), 
+            		mCursor.getDouble(COLUMN_INDEX_LON));
 
             dateText.setText(new SimpleDateFormat().format(mDateContent));
             
@@ -271,8 +285,7 @@ public class NoteEditor extends Activity {
             locText.setOnClickListener(new View.OnClickListener() {
 				
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					
+					updateLocation();
 				}
 			});
             
@@ -297,8 +310,16 @@ public class NoteEditor extends Activity {
 
     @Override
     protected void onPause() {
+    	if (isWaitingLocation) {
+    		pd.setCancelable(false);
+    		pd.setMessage("Loading address...");
+    		pd.show();
+    	}
+    	
         super.onPause();
 
+        // wait for location thread to finish (if any):
+        
         // The user is going somewhere else, so make sure their current
         // changes are safely saved away in the provider.  We don't need
         // to do this if only editing.

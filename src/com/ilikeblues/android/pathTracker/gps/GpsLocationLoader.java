@@ -59,6 +59,7 @@ public class GpsLocationLoader {
             lm.removeUpdates(this);
             lm.removeUpdates(locationListenerNetwork);
         }
+        
         public void onProviderDisabled(String provider) {}
         public void onProviderEnabled(String provider) {}
         public void onStatusChanged(String provider, int status, Bundle extras) {}

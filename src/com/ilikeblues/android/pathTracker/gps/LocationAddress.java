@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * @author ilikeblues
@@ -56,6 +58,12 @@ public class LocationAddress extends Location {
 		getAddressAsString();
 	}
 	
+	public void setLatLon(double latitude, double longitud) {
+		super.setLatitude(latitude);
+		super.setLongitude(longitud);
+		getAddressAsString();
+	}
+	
 	@Override
 	public void set(Location l) {
 		super.set(l);
@@ -63,9 +71,6 @@ public class LocationAddress extends Location {
 	}
 	
 	private void getAddressAsString() {
-		Thread th = new Thread() {
-			public void run() {
-				
 		String locationText;
 		Geocoder gcd = new Geocoder(parent, Locale.getDefault());
 		
@@ -98,10 +103,6 @@ public class LocationAddress extends Location {
 			setLocalizedAddress(locationText);
 		}
 
-			}
-		};
-		
-		th.start();
 	}
 	
 	public String getArrangedAddress() {
