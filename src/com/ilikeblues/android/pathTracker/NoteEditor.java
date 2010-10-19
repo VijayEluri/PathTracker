@@ -309,7 +309,6 @@ public class NoteEditor extends Activity {
             
             locText.setText(loc);
             /*locText.setOnClickListener(new View.OnClickListener() {
-				
 				public void onClick(View v) {
 					// updateLocation();
 				}
@@ -375,18 +374,19 @@ public class NoteEditor extends Activity {
                             }
                         }
                         values.put(Notes.TITLE, title);
+
+                        // write additional info:
+                        values.put(Notes.CREATED_DATE, mDateContent.getTime());
+                        values.put(Notes.LATITUD, mLocationContent.getLatitude());
+                        values.put(Notes.LONGITUD, mLocationContent.getLongitude());
+                        
+                        values.put(Notes.LOCATION, mLocationContent.getLocalizedAddress());
                     }
                 }
 
                 // Write our text back into the provider.
                 values.put(Notes.NOTE, text);
 
-                // write additional info:
-                values.put(Notes.CREATED_DATE, mDateContent.getTime());
-                values.put(Notes.LATITUD, mLocationContent.getLatitude());
-                values.put(Notes.LONGITUD, mLocationContent.getLongitude());
-                
-                values.put(Notes.LOCATION, mLocationContent.getLocalizedAddress());
                 // Commit all of our changes to persistent storage. When the update completes
                 // the content provider will notify the cursor of the change, which will
                 // cause the UI to be updated.
