@@ -283,6 +283,8 @@ public class NoteEditor extends Activity {
                 	updateAddress();
                 	
                 	loc = mLocationContent.getArrangedAddress();
+                } else {
+                	mLocationContent.setLocalizedAddress(loc);
                 }
                 
             } else if (mState == STATE_INSERT) {
@@ -387,6 +389,7 @@ public class NoteEditor extends Activity {
                 // Write our text back into the provider.
                 values.put(Notes.NOTE, text);
 
+                values.put(Notes.LOCATION, mLocationContent.getLocalizedAddress());
                 // Commit all of our changes to persistent storage. When the update completes
                 // the content provider will notify the cursor of the change, which will
                 // cause the UI to be updated.

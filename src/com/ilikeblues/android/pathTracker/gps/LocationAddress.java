@@ -127,7 +127,7 @@ public class LocationAddress extends Location {
 		return address;
 	}
 
-	private void setLocalizedAddress(String localizedAddress) {
+	public void setLocalizedAddress(String localizedAddress) {
 		this.localizedAddress = localizedAddress;
 		
 		Log.e("ADDRESS set TO:", this.localizedAddress);
