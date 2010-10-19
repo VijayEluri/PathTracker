@@ -37,7 +37,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -96,28 +95,28 @@ public class NoteEditor extends Activity {
     private TextView locText;
     private TextView dateText;
 
-    private boolean isWaitingLocation = false;
 	private ProgressDialog pd;
 
     private Date            mDateContent;
-    private LocationAddress mLocationContent = new LocationAddress(LocationManager.GPS_PROVIDER, this);
+    private LocationAddress mLocationContent;
     
-    GpsLocationLoader myLocation = new GpsLocationLoader();
+    private GpsLocationLoader myLocation;
 
     public LocationResult locationResult = new LocationResult() {
         @Override
         public void gotLocation(final Location location) {
+        	if (pd.isShowing()) {
+        		pd.dismiss();
+        	}
+
         	mLocationContent.set(location);
+        	
+        	updateAddress();
         	String address = mLocationContent.getArrangedAddress();
         	
         	Log.e("EN NOTIFIEREDITOR:", address);
         	
         	locText.setText(address);
-        	
-        	isWaitingLocation = false;
-        	if (pd.isShowing()) {
-        		pd.dismiss();
-        	}
         };
     };
     /**
@@ -156,7 +155,13 @@ public class NoteEditor extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+    	mLocationContent = new LocationAddress(LocationManager.GPS_PROVIDER, this);
+    	myLocation = new GpsLocationLoader();
+    	
     	pd = new ProgressDialog(this);
+    	pd.setMessage("Loading location...");
+    	
+    	pd.setCancelable(false);
     	
         super.onCreate(savedInstanceState);
 
@@ -211,10 +216,6 @@ public class NoteEditor extends Activity {
 
         // if it is a new note, insert current date and location:
         if (Intent.ACTION_INSERT.equals(action)) {
-	        dateText.setText(new SimpleDateFormat().format(new Date()));
-	
-	        // now, update location:
-	        updateLocation();
         } else {
         	// if not new, read the saved info:
         }
@@ -228,7 +229,20 @@ public class NoteEditor extends Activity {
         }
     }
 
+	private void updateAddress() {
+        // now, update location:
+    	pd.setMessage("Loading address...");
+    	pd.show();
+    	
+    	mLocationContent.getAddressAsString();
+    	
+    	pd.dismiss();
+	}
+
 	private void updateLocation() {
+        // now, update location:
+        if (!pd.isShowing()) pd.show();
+        
 		/*********************************************
          * Test location class
          */
@@ -237,8 +251,6 @@ public class NoteEditor extends Activity {
         	locText.setText("Unable to retrieve location!");
         } else {
         	locText.setText("Loading location!");
-        	
-        	isWaitingLocation = true;
         }
 	}
 
@@ -252,11 +264,35 @@ public class NoteEditor extends Activity {
             // Make sure we are at the one and only row in the cursor.
             mCursor.moveToFirst();
 
+            mLocationContent = new LocationAddress(LocationManager.GPS_PROVIDER, this);
+
+            String loc = "";
+            
             // Modify our overall title depending on the mode we are running in.
             if (mState == STATE_EDIT) {
                 setTitle(getText(R.string.title_edit));
+                
+            	mLocationContent.setLatLon(
+                		mCursor.getDouble(COLUMN_INDEX_LAT), 
+                		mCursor.getDouble(COLUMN_INDEX_LON));
+
+            	mDateContent = new Date(mCursor.getLong(COLUMN_INDEX_DATE));
+            	
+                loc = mCursor.getString(COLUMN_INDEX_LOC);
+                if (EMPTY_STRING.compareTo(loc) == 0) {
+                	updateAddress();
+                	
+                	loc = mLocationContent.getArrangedAddress();
+                }
+                
             } else if (mState == STATE_INSERT) {
                 setTitle(getText(R.string.title_create));
+                
+    	        mDateContent = new Date();
+
+    	        updateLocation();
+    	        
+    	        loc = "Retrieving address...";
             }
 
             // This is a little tricky: we may be resumed after previously being
@@ -267,27 +303,17 @@ public class NoteEditor extends Activity {
             mText.setTextKeepState(note);
             
             // get additional data:
-            mDateContent = new Date(mCursor.getLong(COLUMN_INDEX_DATE));
-            mLocationContent = new LocationAddress(LocationManager.GPS_PROVIDER, this);
-
-            mLocationContent.setLatLon(
-            		mCursor.getDouble(COLUMN_INDEX_LAT), 
-            		mCursor.getDouble(COLUMN_INDEX_LON));
+            
 
             dateText.setText(new SimpleDateFormat().format(mDateContent));
             
-            String loc = mCursor.getString(COLUMN_INDEX_LOC);
-            if (EMPTY_STRING.compareTo(loc) == 0) {
-            	loc = mLocationContent.getLocalizedAddress();
-            }
-            
             locText.setText(loc);
-            locText.setOnClickListener(new View.OnClickListener() {
+            /*locText.setOnClickListener(new View.OnClickListener() {
 				
 				public void onClick(View v) {
-					updateLocation();
+					// updateLocation();
 				}
-			});
+			});*/
             
             // If we hadn't previously retrieved the original text, do so
             // now.  This allows the user to revert their changes.
@@ -310,12 +336,6 @@ public class NoteEditor extends Activity {
 
     @Override
     protected void onPause() {
-    	if (isWaitingLocation) {
-    		pd.setCancelable(false);
-    		pd.setMessage("Loading address...");
-    		pd.show();
-    	}
-    	
         super.onPause();
 
         // wait for location thread to finish (if any):
