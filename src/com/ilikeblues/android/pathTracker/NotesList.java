@@ -53,6 +53,7 @@ public class NotesList extends ListActivity {
     private static final String[] PROJECTION = new String[] {
             Notes._ID, // 0
             Notes.TITLE, // 1
+            Notes.LOCATION, // 2
     };
 
     /** The index of the title column */
@@ -81,7 +82,7 @@ public class NotesList extends ListActivity {
 
         // Used to map notes entries from the database to views
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.noteslist_item, cursor,
-                new String[] { Notes.TITLE }, new int[] { android.R.id.text1 });
+                new String[] { Notes.TITLE, Notes.LOCATION }, new int[] { android.R.id.text1, android.R.id.text2 });
         setListAdapter(adapter);
     }
 

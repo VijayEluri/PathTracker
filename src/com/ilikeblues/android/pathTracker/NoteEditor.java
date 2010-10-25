@@ -95,7 +95,7 @@ public class NoteEditor extends Activity {
     private TextView locText;
     private TextView dateText;
 
-	private ProgressDialog pd;
+	private ProgressDialog progressDialog;
 
     private Date            mDateContent;
     private LocationAddress mLocationContent;
@@ -105,8 +105,8 @@ public class NoteEditor extends Activity {
     public LocationResult locationResult = new LocationResult() {
         @Override
         public void gotLocation(final Location location) {
-        	if (pd.isShowing()) {
-        		pd.dismiss();
+        	if (progressDialog.isShowing()) {
+        		progressDialog.dismiss();
         	}
 
         	mLocationContent.set(location);
@@ -158,10 +158,10 @@ public class NoteEditor extends Activity {
     	mLocationContent = new LocationAddress(LocationManager.GPS_PROVIDER, this);
     	myLocation = new GpsLocationLoader();
     	
-    	pd = new ProgressDialog(this);
-    	pd.setMessage("Loading location...");
+    	progressDialog = new ProgressDialog(this);
+    	progressDialog.setMessage("Loading location...");
     	
-    	pd.setCancelable(false);
+    	progressDialog.setCancelable(false);
     	
         super.onCreate(savedInstanceState);
 
@@ -231,17 +231,17 @@ public class NoteEditor extends Activity {
 
 	private void updateAddress() {
         // now, update location:
-    	pd.setMessage("Loading address...");
-    	pd.show();
+    	progressDialog.setMessage("Loading address...");
+    	progressDialog.show();
     	
     	mLocationContent.getAddressAsString();
     	
-    	pd.dismiss();
+    	progressDialog.dismiss();
 	}
 
 	private void updateLocation() {
         // now, update location:
-        if (!pd.isShowing()) pd.show();
+        if (!progressDialog.isShowing()) progressDialog.show();
         
 		/*********************************************
          * Test location class
