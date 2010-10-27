@@ -12,7 +12,7 @@
 	android:orientation="vertical" android:paddingLeft="6dip"
 	android:paddingRight="6dip" android:paddingBottom="3dip"
 	android:layout_height="fill_parent" android:layout_width="fill_parent"
-	android:scrollbars="vertical">
+	android:scrollbars="vertical" android:background="@drawable/note_gradient">
 
 
 	<LinearLayout android:id="@+id/LinearLayout01"
