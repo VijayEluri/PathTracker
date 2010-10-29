@@ -44,8 +44,9 @@ public class NotesList extends ListActivity {
     private static final String TAG = "NotesList";
 
     // Menu item ids
-    public static final int MENU_ITEM_DELETE = Menu.FIRST;
-    public static final int MENU_ITEM_INSERT = Menu.FIRST + 1;
+    public static final int MENU_ITEM_DELETE  = Menu.FIRST;
+    public static final int MENU_ITEM_INSERT  = Menu.FIRST + 1;
+    public static final int MENU_ITEM_SUMMARY = Menu.FIRST + 2;
 
     /**
      * The columns we are interested in from the database
@@ -95,6 +96,10 @@ public class NotesList extends ListActivity {
         menu.add(0, MENU_ITEM_INSERT, 0, R.string.menu_insert)
                 .setShortcut('3', 'a')
                 .setIcon(android.R.drawable.ic_menu_add);
+
+        menu.add(0, MENU_ITEM_SUMMARY, 1, R.string.menu_summary)
+				.setShortcut('4', 'b')
+				.setIcon(android.R.drawable.ic_menu_info_details);
 
         // Generate any additional actions that can be performed on the
         // overall list.  In a normal install, there are no additional
@@ -151,7 +156,12 @@ public class NotesList extends ListActivity {
             // Launch activity to insert a new item
             startActivity(new Intent(Intent.ACTION_INSERT, getIntent().getData()));
             return true;
+        case MENU_ITEM_SUMMARY:
+            // Launch activity to insert a new item
+            startActivity(new Intent(Intent.ACTION_GET_CONTENT, getIntent().getData()));
+            return true;
         }
+        
         return super.onOptionsItemSelected(item);
     }
 

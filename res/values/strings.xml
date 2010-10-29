@@ -45,4 +45,9 @@
 <string name="OnClickLocText">MapsStartListener</string>
     <string name="no_title">untitled</string>
 <string name="untitled">untitled</string>
+<string name="menu_summary">Summary</string>
+<string name="FSTextView">No entries found</string>
+    <string name="menu_copy">Copy to clipboard</string>
+    <string name="menu_email">Send by email</string>
+    <string name="text_copied">Full text copied to clipboard</string>
 </resources>
