@@ -33,6 +33,9 @@ public class FullSummary extends Activity {
      * The columns we are interested in from the database
      */
 	
+	/**
+	 * Este es el espacio en blanco
+	 */
     private static final String[] PROJECTION = new String[] {
         Notes._ID, // 0
         Notes.NOTE, // 1
